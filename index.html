@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -35,13 +35,12 @@
     <div class="modal-content">
       <span class="close" onclick="closeModal('nova')">&times;</span>
       <h2>➕ Nova Aposta</h2>
-      <label for="jogo">Jogo:</label>
-      <input type="text" id="jogo" placeholder="Ex: Ajax x Internazionale">
-      <div class="search-results-container">
-        <select id="jogo-select">
-          <option value="">Digite para buscar jogos...</option>
-        </select>
-      </div>
+      <label for="jogo-search">Buscar Time:</label>
+      <input type="text" id="jogo-search" placeholder="Ex: Ajax">
+      <button class="btn-search" onclick="searchTeamAndFixtures()">Buscar Jogos</button>
+      
+      <label for="jogo-select">Selecione o Jogo:</label>
+      <select id="jogo-select"></select>
 
       <label for="data">Data:</label>
       <input type="date" id="data">
