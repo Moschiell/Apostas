@@ -233,3 +233,77 @@ button:hover {
 .aposta-card:hover {
     border-color: #2184e9;
 }
+
+/* Estilos para o novo layout de cards agrupados */
+.aposta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.aposta-header h3 {
+    margin: 0;
+    font-size: 18px;
+    flex-grow: 1;
+}
+
+.aposta-geral-info {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.aposta-data {
+    color: #8b949e;
+    font-size: 14px;
+    margin-top: 0;
+}
+
+.apostas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sub-aposta {
+    padding: 10px;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    background: #101216;
+    position: relative;
+}
+
+.sub-aposta p {
+    margin: 0;
+}
+
+.sub-aposta strong {
+    color: #fff;
+}
+
+.sub-aposta .aposta-card-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.sub-status-green {
+    background: #3fb950;
+    color: #0d1117;
+}
+
+.sub-status-red {
+    background: #f85149;
+    color: #0d1117;
+}
+
+.sub-status-pendente {
+    background: #e6edf3;
+    color: #0d1117;
+}
+
+
