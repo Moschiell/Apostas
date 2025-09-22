@@ -24,7 +24,7 @@
     <canvas id="lucroDiarioChart"></canvas>
   </div>
 
-  <button class="btn-nova-aposta" onclick="abrirModal('nova')">+ Nova Aposta</button>
+  <button class="btn-nova-aposta" onclick="openModal('nova')">+ Nova Aposta</button>
   <button class="btn-reiniciar" onclick="reiniciarDiario()">Reiniciar Diário (Limpar Dados)</button>
 
   <h2>📋 Suas Apostas</h2>
@@ -33,15 +33,10 @@
 
   <div id="modal-nova-aposta" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="fecharModal('nova')">&times;</span>
+      <span class="close" onclick="closeModal('nova')">&times;</span>
       <h2>➕ Nova Aposta</h2>
       <label for="jogo">Jogo:</label>
       <input type="text" id="jogo" placeholder="Ex: Ajax x Internazionale">
-      <div class="search-results-container">
-        <select id="jogo-select">
-          <option value="">Digite para buscar jogos...</option>
-        </select>
-      </div>
 
       <label for="data">Data:</label>
       <input type="date" id="data">
@@ -49,14 +44,14 @@
       <div id="apostas-dinamicas">
         </div>
       
-      <button class="btn-adicionar-aposta" onclick="adicionarApostaCampos()">+ Adicionar Aposta</button>
-      <button onclick="salvarApostas()">Adicionar</button>
+      <button class="btn-adicionar-aposta" onclick="addBetFields()">+ Adicionar Aposta</button>
+      <button onclick="saveBets()">Adicionar</button>
     </div>
   </div>
 
   <div id="modal-edicao" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="fecharModal('edicao')">&times;</span>
+      <span class="close" onclick="closeModal('edicao')">&times;</span>
       <h2>✏️ Editar Aposta</h2>
       <label for="edicao-jogo">Jogo:</label>
       <input type="text" id="edicao-jogo" >
@@ -65,11 +60,12 @@
       
       <div id="edicao-apostas-container">
       </div>
-      <button class="btn-salvar-modal" onclick="salvarEdicao()">Salvar Alterações</button>
-      <button class="btn-fechar-modal" onclick="fecharModal('edicao')">Fechar</button>
+      <button class="btn-salvar-modal" onclick="saveEdit()">Salvar Alterações</button>
+      <button class="btn-fechar-modal" onclick="closeModal('edicao')">Fechar</button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js">
+    
 </body>
 </html>
