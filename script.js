@@ -11,11 +11,86 @@ let apostas = JSON.parse(localStorage.getItem("apostas")) || dadosIniciais;
 let apostaCount = 2;
 let apostaSendoEditadaIndex = -1;
 
+// --- Funções Auxiliares para Reduzir Repetição ---
+
+// 1. Função para renderizar os campos de aposta
+function renderizarCamposAposta(containerId, apostaData = [], prefixo = '') {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    // Certifica que sempre haverá pelo menos um campo para nova aposta
+    const dados = apostaData.length > 0 ? apostaData : [{tipo: '', casa: '', valor: '', odd: '', resultado: 'Pendente'}];
+    
+    dados.forEach((aposta, i) => {
+        const id = `${prefixo}-${i}`;
+        const div = document.createElement('div');
+        div.classList.add(`${prefixo}-aposta-fields`);
+        div.innerHTML = `
+            <hr>
+            <label for="${prefixo}-tipo-${i}">Tipo de Aposta:</label>
+            <input type="text" id="${prefixo}-tipo-${i}" placeholder="Ex: Over 2.5" value="${aposta.tipo || ''}" required>
+            
+            <label for="${prefixo}-casa-${i}">Casa de Aposta:</label>
+            <select id="${prefixo}-casa-${i}" class="${prefixo}-casa-de-aposta" required></select>
+            
+            <label for="${prefixo}-valor-${i}">Valor Apostado:</label>
+            <input type="number" id="${prefixo}-valor-${i}" step="0.01" placeholder="R$ 0,00" value="${aposta.valor || ''}" required>
+            
+            <label for="${prefixo}-odd-${i}">Odd:</label>
+            <input type="number" id="${prefixo}-odd-${i}" step="0.001" placeholder="1.00" value="${aposta.odd || ''}" required>
+
+            <label for="${prefixo}-resultado-${i}">Resultado:</label>
+            <select id="${prefixo}-resultado-${i}" required>
+                <option value="Pendente" ${aposta.resultado === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                <option value="Green" ${aposta.resultado === 'Green' ? 'selected' : ''}>Green</option>
+                <option value="Red" ${aposta.resultado === 'Red' ? 'selected' : ''}>Red</option>
+            </select>
+        `;
+        container.appendChild(div);
+        
+        const selectCasa = document.getElementById(`${prefixo}-casa-${i}`);
+        casasDeAposta.forEach(casa => {
+            const option = document.createElement("option");
+            option.value = casa;
+            option.textContent = casa;
+            selectCasa.appendChild(option);
+        });
+        if (aposta.casa) {
+            selectCasa.value = aposta.casa;
+        }
+    });
+}
+
+// 2. Função para coletar dados de campos de aposta
+function coletarDadosCamposAposta(containerId, prefixo = '') {
+    const apostasDoForm = [];
+    const campos = document.querySelectorAll(`#${containerId} .${prefixo}-aposta-fields`);
+    campos.forEach(campo => {
+        const tipo = campo.querySelector(`[id^="${prefixo}-tipo-"]`).value;
+        const casa = campo.querySelector(`[id^="${prefixo}-casa-"]`).value;
+        const valor = parseFloat(campo.querySelector(`[id^="${prefixo}-valor-"]`).value);
+        const odd = parseFloat(campo.querySelector(`[id^="${prefixo}-odd-"]`).value);
+        const resultado = campo.querySelector(`[id^="${prefixo}-resultado-"]`).value;
+        if (tipo && casa && valor && odd && resultado) {
+            apostasDoForm.push({ tipo, casa, valor, odd, resultado });
+        }
+    });
+    return apostasDoForm;
+}
+
+// 3. Função para atualizar toda a interface de uma vez
+function atualizarInterface() {
+    renderApostas();
+    atualizarDashboard();
+    renderGraficoLucroDiario();
+}
+
+// --- Funções de UI (Modal, etc.) ---
+
 function abrirModal(tipo) {
     if (tipo === 'nova') {
         document.getElementById('modal-nova-aposta').style.display = "block";
         limparFormulario();
-        popularCasas();
         carregarJogosOnline();
     } else if (tipo === 'edicao') {
         document.getElementById('modal-edicao').style.display = "block";
@@ -34,95 +109,57 @@ function fecharModal(tipo) {
 function limparFormulario() {
     document.getElementById('jogo').value = '';
     document.getElementById('data').value = '';
-    document.getElementById('apostas-dinamicas').innerHTML = '';
-    apostaCount = 1;
-    adicionarApostaCampos();
+    renderizarCamposAposta('apostas-dinamicas', [], 'aposta');
+    apostaCount = 1; // Reseta o contador para o botão "adicionar outra"
 }
 
-function popularCasas() {
-    const selects = document.querySelectorAll('.casa-de-aposta');
-    selects.forEach(select => {
-        select.innerHTML = '<option value="">Selecione a Casa</option>';
-        casasDeAposta.forEach(casa => {
-            const option = document.createElement("option");
-            option.value = casa;
-            option.textContent = casa;
-            select.appendChild(option);
-        });
-    });
-}
-
-function adicionarApostaCampos(aposta = {}) {
+function adicionarApostaCampos() {
+    apostaCount++;
     const container = document.getElementById('apostas-dinamicas');
     const div = document.createElement('div');
     div.classList.add('aposta-fields');
     div.innerHTML = `
         <hr>
         <label for="tipo-${apostaCount}">Tipo de Aposta:</label>
-        <input type="text" id="tipo-${apostaCount}" placeholder="Ex: Over 2.5" value="${aposta.tipo || ''}" required>
+        <input type="text" id="tipo-${apostaCount}" placeholder="Ex: Over 2.5" required>
         
         <label for="casa-${apostaCount}">Casa de Aposta:</label>
-        <select id="casa-${apostaCount}" class="casa-de-aposta" required>
-        </select>
+        <select id="casa-${apostaCount}" class="casa-de-aposta" required></select>
         
         <label for="valor-${apostaCount}">Valor Apostado:</label>
-        <input type="number" id="valor-${apostaCount}" step="0.01" placeholder="R$ 0,00" value="${aposta.valor || ''}" required>
+        <input type="number" id="valor-${apostaCount}" step="0.01" placeholder="R$ 0,00" required>
         
         <label for="odd-${apostaCount}">Odd:</label>
-        <input type="number" id="odd-${apostaCount}" step="0.001" placeholder="1.00" value="${aposta.odd || ''}" required>
+        <input type="number" id="odd-${apostaCount}" step="0.001" placeholder="1.00" required>
 
         <label for="resultado-${apostaCount}">Resultado:</label>
         <select id="resultado-${apostaCount}" required>
-            <option value="Pendente" ${aposta.resultado === 'Pendente' ? 'selected' : ''}>Pendente</option>
-            <option value="Green" ${aposta.resultado === 'Green' ? 'selected' : ''}>Green</option>
-            <option value="Red" ${aposta.resultado === 'Red' ? 'selected' : ''}>Red</option>
+            <option value="Pendente" selected>Pendente</option>
+            <option value="Green">Green</option>
+            <option value="Red">Red</option>
         </select>
     `;
     container.appendChild(div);
-    popularCasas();
     const selectCasa = document.getElementById(`casa-${apostaCount}`);
-    if (aposta.casa) {
-        selectCasa.value = aposta.casa;
-    }
-    apostaCount++;
+    casasDeAposta.forEach(casa => {
+        const option = document.createElement("option");
+        option.value = casa;
+        option.textContent = casa;
+        selectCasa.appendChild(option);
+    });
 }
 
 function salvarApostas() {
     const jogo = document.getElementById('jogo').value;
     const data = document.getElementById('data').value;
-    const apostasDoForm = [];
-
-    const campos = document.querySelectorAll('.aposta-fields');
-    campos.forEach(campo => {
-        const tipo = campo.querySelector('[id^="tipo-"]').value;
-        const casa = campo.querySelector('[id^="casa-"]').value;
-        const valor = parseFloat(campo.querySelector('[id^="valor-"]').value);
-        const odd = parseFloat(campo.querySelector('[id^="odd-"]').value);
-        const resultado = campo.querySelector('[id^="resultado-"]').value;
-
-        if (tipo && casa && valor && odd && resultado) {
-            apostasDoForm.push({
-                tipo,
-                casa,
-                valor,
-                odd,
-                resultado
-            });
-        }
-    });
+    const apostasDoForm = coletarDadosCamposAposta('apostas-dinamicas', 'aposta');
 
     if (jogo && data && apostasDoForm.length > 0) {
-        const novaAposta = {
-            jogo,
-            data,
-            apostas: apostasDoForm
-        };
+        const novaAposta = { jogo, data, apostas: apostasDoForm };
         apostas.unshift(novaAposta);
         localStorage.setItem('apostas', JSON.stringify(apostas));
         fecharModal('nova');
-        renderApostas();
-        atualizarDashboard();
-        renderGraficoLucroDiario();
+        atualizarInterface();
         limparFormulario();
     } else {
         alert("Por favor, preencha todos os campos obrigatórios.");
@@ -162,46 +199,7 @@ function editarAposta(index) {
     const aposta = apostas[index];
     document.getElementById('edicao-jogo').value = aposta.jogo;
     document.getElementById('edicao-data').value = aposta.data;
-    const container = document.getElementById('edicao-apostas-container');
-    container.innerHTML = '';
-
-    aposta.apostas.forEach((a, i) => {
-        const div = document.createElement('div');
-        div.classList.add('edicao-aposta-fields');
-        div.innerHTML = `
-            <hr>
-            <label for="edicao-tipo-${i}">Tipo de Aposta:</label>
-            <input type="text" id="edicao-tipo-${i}" value="${a.tipo}">
-            
-            <label for="edicao-casa-${i}">Casa de Aposta:</label>
-            <select id="edicao-casa-${i}" class="edicao-casa-de-aposta">
-            </select>
-            
-            <label for="edicao-valor-${i}">Valor Apostado:</label>
-            <input type="number" id="edicao-valor-${i}" step="0.01" value="${a.valor}">
-            
-            <label for="edicao-odd-${i}">Odd:</label>
-            <input type="number" id="edicao-odd-${i}" step="0.001" value="${a.odd}">
-
-            <label for="edicao-resultado-${i}">Resultado:</label>
-            <select id="edicao-resultado-${i}">
-                <option value="Pendente" ${a.resultado === 'Pendente' ? 'selected' : ''}>Pendente</option>
-                <option value="Green" ${a.resultado === 'Green' ? 'selected' : ''}>Green</option>
-                <option value="Red" ${a.resultado === 'Red' ? 'selected' : ''}>Red</option>
-            </select>
-        `;
-        container.appendChild(div);
-
-        const selectCasa = document.getElementById(`edicao-casa-${i}`);
-        casasDeAposta.forEach(casa => {
-            const option = document.createElement("option");
-            option.value = casa;
-            option.textContent = casa;
-            selectCasa.appendChild(option);
-        });
-        selectCasa.value = a.casa;
-    });
-
+    renderizarCamposAposta('edicao-apostas-container', aposta.apostas, 'edicao');
     fecharModal('nova');
     abrirModal('edicao');
 }
@@ -210,41 +208,18 @@ function salvarEdicao() {
     const aposta = apostas[apostaSendoEditadaIndex];
     aposta.jogo = document.getElementById('edicao-jogo').value;
     aposta.data = document.getElementById('edicao-data').value;
+    aposta.apostas = coletarDadosCamposAposta('edicao-apostas-container', 'edicao');
     
-    const campos = document.querySelectorAll('.edicao-aposta-fields');
-    aposta.apostas = [];
-    campos.forEach(campo => {
-        const tipo = campo.querySelector('[id^="edicao-tipo-"]').value;
-        const casa = campo.querySelector('[id^="edicao-casa-"]').value;
-        const valor = parseFloat(campo.querySelector('[id^="edicao-valor-"]').value);
-        const odd = parseFloat(campo.querySelector('[id^="edicao-odd-"]').value);
-        const resultado = campo.querySelector('[id^="edicao-resultado-"]').value;
-
-        if (tipo && casa && valor && odd && resultado) {
-            aposta.apostas.push({
-                tipo,
-                casa,
-                valor,
-                odd,
-                resultado
-            });
-        }
-    });
-
     localStorage.setItem('apostas', JSON.stringify(apostas));
     fecharModal('edicao');
-    renderApostas();
-    atualizarDashboard();
-    renderGraficoLucroDiario();
+    atualizarInterface();
 }
 
 function excluirAposta(index) {
     if (confirm("Tem certeza que deseja excluir esta aposta?")) {
         apostas.splice(index, 1);
         localStorage.setItem('apostas', JSON.stringify(apostas));
-        renderApostas();
-        atualizarDashboard();
-        renderGraficoLucroDiario();
+        atualizarInterface();
     }
 }
 
@@ -252,23 +227,20 @@ function atualizarDashboard() {
     const agora = new Date();
     const mesAtual = agora.getMonth();
     const anoAtual = agora.getFullYear();
+    const dataHoje = agora.toISOString().slice(0, 10);
 
     const apostasDoMes = apostas.filter(aposta => {
         const dataAposta = new Date(aposta.data);
         return dataAposta.getMonth() === mesAtual && dataAposta.getFullYear() === anoAtual;
     });
 
-    const apostasDeHoje = apostas.filter(aposta => {
-        const dataAposta = new Date(aposta.data);
-        return dataAposta.getDate() === agora.getDate() && dataAposta.getMonth() === mesAtual && dataAposta.getFullYear() === anoAtual;
-    });
+    const apostasDeHoje = apostas.filter(aposta => aposta.data === dataHoje);
 
     let totalApostadoMes = 0;
     let ganhosMes = 0;
     let pendenteMes = 0;
     let lucroMes = 0;
     let ganhoHoje = 0;
-    let totalApostadoHoje = 0;
 
     apostasDoMes.forEach(aposta => {
         aposta.apostas.forEach(a => {
@@ -286,7 +258,6 @@ function atualizarDashboard() {
 
     apostasDeHoje.forEach(aposta => {
         aposta.apostas.forEach(a => {
-            totalApostadoHoje += a.valor;
             if (a.resultado === 'Green') {
                 ganhoHoje += (a.valor * a.odd) - a.valor;
             } else if (a.resultado === 'Red') {
@@ -304,26 +275,17 @@ function atualizarDashboard() {
     document.getElementById('roiMes').textContent = `${roiMes.toFixed(2)}%`;
     document.getElementById('ganhoHoje').textContent = `R$ ${ganhoHoje.toFixed(2)}`;
 
-    // Atualiza a cor do texto do lucro
     const lucroMesElement = document.getElementById('lucroMes');
     lucroMesElement.classList.remove('lucro-positive', 'lucro-negative', 'lucro-zero');
-    if (lucroMes > 0) {
-        lucroMesElement.classList.add('lucro-positive');
-    } else if (lucroMes < 0) {
-        lucroMesElement.classList.add('lucro-negative');
-    } else {
-        lucroMesElement.classList.add('lucro-zero');
-    }
+    if (lucroMes > 0) lucroMesElement.classList.add('lucro-positive');
+    else if (lucroMes < 0) lucroMesElement.classList.add('lucro-negative');
+    else lucroMesElement.classList.add('lucro-zero');
 
     const ganhoHojeElement = document.getElementById('ganhoHoje');
     ganhoHojeElement.classList.remove('lucro-positive', 'lucro-negative', 'lucro-zero');
-    if (ganhoHoje > 0) {
-        ganhoHojeElement.classList.add('lucro-positive');
-    } else if (ganhoHoje < 0) {
-        ganhoHojeElement.classList.add('lucro-negative');
-    } else {
-        ganhoHojeElement.classList.add('lucro-zero');
-    }
+    if (ganhoHoje > 0) ganhoHojeElement.classList.add('lucro-positive');
+    else if (ganhoHoje < 0) ganhoHojeElement.classList.add('lucro-negative');
+    else ganhoHojeElement.classList.add('lucro-zero');
 }
 
 // Gráfico de Lucro Diário
@@ -331,9 +293,11 @@ let lucroDiarioChart;
 
 function renderGraficoLucroDiario() {
     const lucroPorDia = {};
+    const datas = new Set();
 
     apostas.forEach(aposta => {
         const data = aposta.data;
+        datas.add(data);
         if (!lucroPorDia[data]) {
             lucroPorDia[data] = 0;
         }
@@ -345,8 +309,8 @@ function renderGraficoLucroDiario() {
             }
         });
     });
-
-    const datasOrdenadas = Object.keys(lucroPorDia).sort();
+    
+    const datasOrdenadas = Array.from(datas).sort();
     const dadosGrafico = datasOrdenadas.map(data => lucroPorDia[data]);
     
     if (lucroDiarioChart) {
@@ -371,28 +335,16 @@ function renderGraficoLucroDiario() {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: {
-                    ticks: { color: '#8b949e' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                },
-                y: {
-                    ticks: { color: '#8b949e' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                }
+                x: { ticks: { color: '#8b949e' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                y: { ticks: { color: '#8b949e' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
             },
             plugins: {
-                legend: {
-                    labels: {
-                        color: '#e6edf3'
-                    }
-                },
+                legend: { labels: { color: '#e6edf3' } },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
                             let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
+                            if (label) label += ': ';
                             label += 'R$ ' + context.raw.toFixed(2);
                             return label;
                         }
@@ -402,7 +354,6 @@ function renderGraficoLucroDiario() {
         }
     });
 }
-
 
 function reiniciarDiario() {
     if (confirm("Você tem certeza que deseja reiniciar o diário? Todos os dados serão perdidos.")) {
@@ -417,25 +368,19 @@ const API_KEY = "Ee702040c0fae28b74e1c6e680a357a9";
 async function carregarJogosOnline() {
     const selectJogo = document.getElementById("jogo");
     selectJogo.innerHTML = '<option value="">Carregando jogos...</option>';
-
     const url = `https://v3.football.api-sports.io/fixtures?live=all`;
 
     try {
         const response = await fetch(url, {
             method: 'GET',
-            headers: {
-                'x-rapidapi-key': API_KEY,
-                'x-rapidapi-host': 'v3.football.api-sports.io'
-            }
+            headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': 'v3.football.api-sports.io' }
         });
         const data = await response.json();
 
         if (data && data.response && data.response.length > 0) {
             selectJogo.innerHTML = '<option value="">Selecione um jogo...</option>';
             data.response.forEach(fixture => {
-                const homeTeam = fixture.teams.home.name;
-                const awayTeam = fixture.teams.away.name;
-                const jogo = `${homeTeam} vs ${awayTeam}`;
+                const jogo = `${fixture.teams.home.name} vs ${fixture.teams.away.name}`;
                 const option = document.createElement("option");
                 option.value = jogo;
                 option.textContent = jogo;
@@ -450,7 +395,5 @@ async function carregarJogosOnline() {
     }
 }
 
-
-renderApostas();
-atualizarDashboard();
-renderGraficoLucroDiario();
+// Inicia a aplicação
+atualizarInterface();
