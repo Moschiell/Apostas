@@ -25,23 +25,29 @@
   </div>
 
   <button class="btn-nova-aposta" onclick="abrirModal('nova')">➕ Nova Aposta</button>
-  <button class="btn-reiniciar" onclick="reiniciarDiario()">🔄 Reiniciar Diário (Limpar Dados)</button>
+  <button class="btn-reiniciar-diario" onclick="reiniciarDiario()">🔄 Reiniciar Diário</button>
 
   <div class="historico-container" id="historico-container">
-  </div>
+    </div>
 
   <div id="modal-nova-aposta" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="fecharModal('nova')">&times;</span>
-      <h2>Adicionar Nova Aposta</h2>
-      <label for="jogo">Jogo:</label>
-      <select id="jogo"></select>
-      <label for="data">Data:</label>
-      <input type="date" id="data">
-      <div id="apostas-dinamicas">
+      <h2>Nova Aposta</h2>
+      <form id="aposta-form">
+        <label for="jogo">Jogo:</label>
+        <select id="jogo" required>
+        </select>
+        
+        <label for="data">Data do Jogo:</label>
+        <input type="date" id="data" required>
+        
+        <div id="apostas-dinamicas">
         </div>
-      <button class="btn-adicionar-aposta" onclick="adicionarApostaCampos()">Adicionar outra aposta</button>
-      <button class="btn-salvar-aposta" onclick="salvarApostas()">Salvar Aposta</button>
+        
+        <button type="button" class="btn-adicionar-aposta" onclick="adicionarApostaCampos()">Adicionar Outra Aposta</button>
+        <button type="button" onclick="salvarApostas()">Salvar Aposta</button>
+      </form>
     </div>
   </div>
 
@@ -49,16 +55,20 @@
     <div class="modal-content">
       <span class="close-btn" onclick="fecharModal('edicao')">&times;</span>
       <h2>Editar Aposta</h2>
-      <label for="edicao-jogo">Jogo:</label>
-      <input type="text" id="edicao-jogo">
-      <label for="edicao-data">Data:</label>
-      <input type="date" id="edicao-data">
-      <div id="edicao-apostas-container">
+      <form id="edicao-form">
+        <label for="edicao-jogo">Jogo:</label>
+        <input type="text" id="edicao-jogo" required>
+        
+        <label for="edicao-data">Data do Jogo:</label>
+        <input type="date" id="edicao-data" required>
+        
+        <div id="edicao-apostas-container">
         </div>
-      <button onclick="salvarEdicao()">Salvar Edição</button>
+        
+        <button type="button" onclick="salvarEdicao()">Salvar Edição</button>
+      </form>
     </div>
   </div>
-  
   <script src="script.js"></script>
 </body>
 </html>
