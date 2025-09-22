@@ -24,51 +24,52 @@
     <canvas id="lucroDiarioChart"></canvas>
   </div>
 
-  <button class="btn-nova-aposta" onclick="abrirModal('nova')">➕ Nova Aposta</button>
-  <button class="btn-reiniciar-diario" onclick="reiniciarDiario()">🔄 Reiniciar Diário</button>
+  <button class="btn-nova-aposta" onclick="abrirModal('nova')">+ Nova Aposta</button>
+  <button class="btn-reiniciar" onclick="reiniciarDiario()">Reiniciar Diário (Limpar Dados)</button>
 
+  <h2>📋 Suas Apostas</h2>
   <div class="historico-container" id="historico-container">
     </div>
 
   <div id="modal-nova-aposta" class="modal">
     <div class="modal-content">
-      <span class="close-btn" onclick="fecharModal('nova')">&times;</span>
-      <h2>Nova Aposta</h2>
-      <form id="aposta-form">
-        <label for="jogo">Jogo:</label>
-        <select id="jogo" required>
+      <span class="close" onclick="fecharModal('nova')">&times;</span>
+      <h2>➕ Nova Aposta</h2>
+      <label for="jogo">Jogo:</label>
+      <input type="text" id="jogo" placeholder="Ex: Ajax x Internazionale">
+      <div class="search-results-container">
+        <select id="jogo-select">
+          <option value="">Digite para buscar jogos...</option>
         </select>
-        
-        <label for="data">Data do Jogo:</label>
-        <input type="date" id="data" required>
-        
-        <div id="apostas-dinamicas">
+      </div>
+
+      <label for="data">Data:</label>
+      <input type="date" id="data">
+
+      <div id="apostas-dinamicas">
         </div>
-        
-        <button type="button" class="btn-adicionar-aposta" onclick="adicionarApostaCampos()">Adicionar Outra Aposta</button>
-        <button type="button" onclick="salvarApostas()">Salvar Aposta</button>
-      </form>
+      
+      <button class="btn-adicionar-aposta" onclick="adicionarApostaCampos()">+ Adicionar Aposta</button>
+      <button onclick="salvarApostas()">Adicionar</button>
     </div>
   </div>
 
   <div id="modal-edicao" class="modal">
     <div class="modal-content">
-      <span class="close-btn" onclick="fecharModal('edicao')">&times;</span>
-      <h2>Editar Aposta</h2>
-      <form id="edicao-form">
-        <label for="edicao-jogo">Jogo:</label>
-        <input type="text" id="edicao-jogo" required>
-        
-        <label for="edicao-data">Data do Jogo:</label>
-        <input type="date" id="edicao-data" required>
-        
-        <div id="edicao-apostas-container">
-        </div>
-        
-        <button type="button" onclick="salvarEdicao()">Salvar Edição</button>
-      </form>
+      <span class="close" onclick="fecharModal('edicao')">&times;</span>
+      <h2>✏️ Editar Aposta</h2>
+      <label for="edicao-jogo">Jogo:</label>
+      <input type="text" id="edicao-jogo" >
+      <label for="edicao-data">Data:</label>
+      <input type="date" id="edicao-data">
+      
+      <div id="edicao-apostas-container">
+      </div>
+      <button class="btn-salvar-modal" onclick="salvarEdicao()">Salvar Alterações</button>
+      <button class="btn-fechar-modal" onclick="fecharModal('edicao')">Fechar</button>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
