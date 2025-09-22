@@ -110,29 +110,39 @@ const saveBets = () => {
 
 const renderApostas = () => {
     const container = document.getElementById('historico-container');
-    container.innerHTML = apostas.map((aposta, index) => `
-        <div class="aposta-card" data-index="${index}">
-            <h3>${aposta.jogo}</h3>
-            <p><strong>Data:</strong> ${aposta.data}</p><hr>
-            ${aposta.apostas.map(a => {
-                const lucro = a.resultado === 'Green' ? (a.valor * a.odd) - a.valor : a.resultado === 'Red' ? -a.valor : 0;
-                const lucroClass = lucro >= 0 ? 'lucro-positive' : 'lucro-negative';
-                return `
+    container.innerHTML = apostas.map((aposta, index) => {
+        // Calcula o lucro total para o conjunto de apostas deste jogo
+        let lucroTotalDoJogo = 0;
+        aposta.apostas.forEach(a => {
+            const lucro = a.resultado === 'Green' ? (a.valor * a.odd) - a.valor : a.resultado === 'Red' ? -a.valor : 0;
+            lucroTotalDoJogo += lucro;
+        });
+
+        const lucroClass = lucroTotalDoJogo >= 0 ? 'lucro-positive' : 'lucro-negative';
+
+        return `
+            <div class="aposta-card" data-index="${index}">
+                <h3>${aposta.jogo}</h3>
+                <p><strong>Data:</strong> ${aposta.data}</p>
+                <hr>
+                ${aposta.apostas.map(a => `
                     <p><strong>Tipo:</strong> ${a.tipo}</p>
                     <p><strong>Casa:</strong> ${a.casa}</p>
                     <p><strong>Valor:</strong> R$ ${a.valor.toFixed(2)}</p>
                     <p><strong>Odd:</strong> ${a.odd.toFixed(3)}</p>
-                    <p><strong>Lucro:</strong> <span class="${lucroClass}">R$ ${lucro.toFixed(2)}</span></p>
                     <span class="aposta-card-status status-${a.resultado.toLowerCase()}">${a.resultado}</span>
                     <hr>
-                `;
-            }).join('')}
-            <div class="aposta-card-actions">
-                <button class="btn-editar" onclick="editBet(${index})">Editar</button>
-                <button class="btn-excluir" onclick="deleteBet(${index})">Excluir</button>
+                `).join('')}
+                <div class="lucro-total-container">
+                    <p><strong>Lucro do Jogo:</strong> <span class="${lucroClass}">R$ ${lucroTotalDoJogo.toFixed(2)}</span></p>
+                </div>
+                <div class="aposta-card-actions">
+                    <button class="btn-editar" onclick="editBet(${index})">Editar</button>
+                    <button class="btn-excluir" onclick="deleteBet(${index})">Excluir</button>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 };
 
 const editBet = index => {
