@@ -393,7 +393,7 @@ function renderGraficoLucroDiario() {
                             if (label) {
                                 label += ': ';
                             }
-                            label += 'R$ ' + context.raw;
+                            label += 'R$ ' + context.raw.toFixed(2);
                             return label;
                         }
                     }
@@ -402,6 +402,7 @@ function renderGraficoLucroDiario() {
         }
     });
 }
+
 
 function reiniciarDiario() {
     if (confirm("Você tem certeza que deseja reiniciar o diário? Todos os dados serão perdidos.")) {
