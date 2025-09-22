@@ -5,7 +5,7 @@ const dadosIniciais = [{"jogo":"Coritba","data":"2025-09-21","apostas":[{"tipo":
 let apostas = JSON.parse(localStorage.getItem("apostas")) || dadosIniciais;
 let apostaSendoEditadaIndex = -1;
 
-const API_KEY = "SUA_CHAVE_AQUI"; // SUBSTITUA AQUI PELA SUA CHAVE DA API-FOOTBALL
+const API_KEY = "ee702040c0fae28b74e1c6e680a357a9"; // SUBSTITUA AQUI PELA SUA CHAVE DA API-FOOTBALL
 
 const updateUI = () => {
     renderApostas();
@@ -15,16 +15,17 @@ const updateUI = () => {
 
 async function searchTeamAndFixtures() {
     const teamName = document.getElementById('jogo-search').value.trim();
+    const selectJogo = document.getElementById("jogo-select");
+    
+    selectJogo.innerHTML = '<option value="">Buscando time...</option>';
+
     if (teamName.length < 3) {
-        alert("Por favor, digite pelo menos 3 letras para buscar o time.");
+        selectJogo.innerHTML = '<option value="">Digite pelo menos 3 letras</option>';
         return;
     }
 
-    const selectJogo = document.getElementById("jogo-select");
-    selectJogo.innerHTML = '<option value="">Buscando time...</option>';
-
     try {
-        // Primeiro, busca o ID do time
+        // Busca o ID do time
         const teamResponse = await fetch(`https://v3.football.api-sports.io/teams?search=${teamName}`, {
             method: 'GET',
             headers: {
@@ -33,6 +34,7 @@ async function searchTeamAndFixtures() {
             }
         });
         const teamData = await teamResponse.json();
+        
         const teamId = teamData?.response?.[0]?.team?.id;
 
         if (!teamId) {
@@ -40,7 +42,7 @@ async function searchTeamAndFixtures() {
             return;
         }
 
-        // Em seguida, busca os próximos jogos do time com o ID
+        // Busca os próximos jogos do time com o ID
         const fixturesResponse = await fetch(`https://v3.football.api-sports.io/fixtures?team=${teamId}&next=10`, {
             method: 'GET',
             headers: {
@@ -224,6 +226,7 @@ const saveEdit = () => {
     closeModal('edicao');
     updateUI();
 };
+
 const deleteBet = index => {
     if (confirm("Tem certeza que deseja excluir esta aposta?")) {
         apostas.splice(index, 1);
