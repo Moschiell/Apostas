@@ -71,17 +71,9 @@ button:hover {
     margin: 0;
 }
 
-.lucro-positive {
-    color: #3fb950;
-}
-
-.lucro-negative {
-    color: #f85149;
-}
-
-.lucro-zero {
-    color: #e6edf3;
-}
+.lucro-positive { color: #3fb950; }
+.lucro-negative { color: #f85149; }
+.lucro-zero { color: #e6edf3; }
 
 /* Gráfico */
 #lucroDiarioChartContainer {
@@ -100,35 +92,17 @@ button:hover {
     border: none;
     border-radius: 8px;
     text-align: center;
-    text-decoration: none;
     font-size: 16px;
     margin: 10px 5px 0 0;
 }
 
-.btn-nova-aposta {
-    background: #238636;
-}
+.btn-nova-aposta { background: #238636; }
+.btn-reiniciar { background: #f85149; }
+.btn-search { background: #2184e9; font-size: 14px; }
 
-.btn-reiniciar {
-    background: #f85149;
-}
-
-.btn-search {
-    background: #2184e9;
-    font-size: 14px;
-}
-
-.btn-search:hover {
-    background: #3991f2;
-}
-
-.btn-nova-aposta:hover {
-    background: #2ea043;
-}
-
-.btn-reiniciar:hover {
-    background: #e5534b;
-}
+.btn-search:hover { background: #3991f2; }
+.btn-nova-aposta:hover { background: #2ea043; }
+.btn-reiniciar:hover { background: #e5534b; }
 
 /* Modal */
 .modal {
@@ -162,10 +136,8 @@ button:hover {
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.close:hover, .close:focus {
     color: #e6edf3;
-    text-decoration: none;
     cursor: pointer;
 }
 
@@ -177,12 +149,9 @@ button:hover {
     background: #161b22;
 }
 
-.btn-adicionar-aposta {
-    background: #30363d;
-    font-size: 14px;
-}
+.btn-adicionar-aposta { background: #30363d; font-size: 14px; }
 
-/* Cards de Histórico */
+/* Histórico */
 .historico-container {
     display: flex;
     flex-direction: column;
@@ -195,60 +164,15 @@ button:hover {
     border: 1px solid #30363d;
     border-radius: 12px;
     padding: 15px;
-    position: relative;
     cursor: pointer;
 }
 
-.aposta-card h3 {
-    font-size: 18px;
-    margin: 0 0 5px;
-    text-align: left;
-}
-
-.aposta-card p {
-    margin: 0 0 5px;
-    font-size: 14px;
-    text-align: left;
-}
-
-.aposta-card-status {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #0d1117;
-    text-transform: uppercase;
-    margin-top: 5px;
-}
-
-.status-finalizada {
-    background: #3fb950;
-}
-
-.status-pendente {
-    background: #e6edf3;
-}
-
-.aposta-card:hover {
-    border-color: #2184e9;
-}
-
-/* Estilos para o novo layout de cards agrupados */
 .aposta-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
     border-bottom: 1px solid #30363d;
     padding-bottom: 10px;
     margin-bottom: 10px;
-}
-
-.aposta-header h3 {
-    margin: 0;
-    font-size: 18px;
-    flex-grow: 1;
 }
 
 .aposta-geral-info {
@@ -257,11 +181,7 @@ button:hover {
     flex-wrap: wrap;
 }
 
-.aposta-data {
-    color: #8b949e;
-    font-size: 14px;
-    margin-top: 0;
-}
+.aposta-data { color: #8b949e; font-size: 14px; }
 
 .apostas-list {
     display: flex;
@@ -277,33 +197,12 @@ button:hover {
     position: relative;
 }
 
-.sub-aposta p {
-    margin: 0;
-}
-
-.sub-aposta strong {
-    color: #fff;
-}
-
 .sub-aposta .aposta-card-status {
     position: absolute;
     top: 10px;
     right: 10px;
 }
 
-.sub-status-green {
-    background: #3fb950;
-    color: #0d1117;
-}
-
-.sub-status-red {
-    background: #f85149;
-    color: #0d1117;
-}
-
-.sub-status-pendente {
-    background: #e6edf3;
-    color: #0d1117;
-}
-
-
+.sub-status-green { background: #3fb950; color: #0d1117; }
+.sub-status-red { background: #f85149; color: #0d1117; }
+.sub-status-pendente { background: #e6edf3; color: #0d1117; }

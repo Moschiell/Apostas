@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Diário de Apostas</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>📊 Diário de Apostas</h1>
+
+  <div class="dashboard-grid">
+    <div class="card"><h3>💰 Apostado (Mês)</h3><p id="totalApostadoMes">R$ 0,00</p></div>
+    <div class="card"><h3>🏆 Ganhos (Mês)</h3><p id="ganhosMes">0</p></div>
+    <div class="card"><h3>📌 Pendente (Mês)</h3><p id="pendenteMes">0</p></div>
+    <div class="card"><h3>📈 Lucro (Mês)</h3><p id="lucroMes">R$ 0,00</p></div>
+    <div class="card"><h3>📈 Ganho (Hoje)</h3><p id="ganhoHoje">R$ 0,00</p></div>
+    <div class="card"><h3>% ROI (Mês)</h3><p id="roiMes">0%</p></div>
+  </div>
+  
+  <div id="lucroDiarioChartContainer">
+    <h2>📉 Lucro Diário</h2>
+    <canvas id="lucroDiarioChart"></canvas>
+  </div>
+
+  <button class="btn-nova-aposta" onclick="openModal('nova')">+ Nova Aposta</button>
+  <button class="btn-reiniciar" onclick="reiniciarDiario()">Reiniciar Diário (Limpar Dados)</button>
+
+  <h2>📋 Suas Apostas</h2>
+  <div class="historico-container" id="historico-container"></div>
+
+  <!-- Modal Nova Aposta -->
+  <div id="modal-nova-aposta" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('nova')">&times;</span>
+      <h2>➕ Nova Aposta</h2>
+      <label for="jogo-search">Buscar Time:</label>
+      <input type="text" id="jogo-search" placeholder="Ex: Ajax">
+      <button class="btn-search" onclick="searchTeamAndFixtures()">Buscar Jogos</button>
+      
+      <label for="jogo-select">Selecione o Jogo:</label>
+      <select id="jogo-select"></select>
+
+      <label for="data">Data:</label>
+      <input type="date" id="data">
+
+      <div id="apostas-dinamicas"></div>
+      
+      <button class="btn-adicionar-aposta" onclick="addBetFields()">+ Adicionar Aposta</button>
+      <button onclick="saveBets()">Adicionar</button>
+    </div>
+  </div>
+
+  <!-- Modal Edição -->
+  <div id="modal-edicao" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('edicao')">&times;</span>
+      <h2>✏️ Editar Aposta</h2>
+      <label for="edicao-jogo">Jogo:</label>
+      <input type="text" id="edicao-jogo" readonly>
+      <label for="edicao-data">Data:</label>
+      <input type="date" id="edicao-data">
+      
+      <div id="edicao-apostas-container"></div>
+      
+      <button id="btn-salvar-edicao">Salvar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
